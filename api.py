@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+from db import check_user_exixts
 
 api = FastAPI()
 
@@ -14,15 +15,17 @@ def main():
     return {"Msg":"This is main"}
 
 @api.get("/auth")
-def auth():
+async def auth(): #this is cool, I know what I'm doing
     return {"Msg":"this is the auth endpoint"}
 
 @api.post("/auth/login")
-def login(user:User):
+async def login(user:User):
     return {"Msg":"this is the login endpoint"}
 
 @api.post("/auth/sign-up")
-def sign_up(user:User):
+async def sign_up(user:User):
+    if check_user_exixts():
+        print("I know!!!")
     return {"Msg":"this is the sign-up endpoint"}
 
 
