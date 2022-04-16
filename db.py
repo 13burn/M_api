@@ -2,22 +2,25 @@ from pony.orm import *
 
 db = Database()
 
-db.bind(provider="sqlite", filename="main.db", create_db=True)
+db.bind(provider="sqlite", filename="main.sqlite", create_db=True)
 
 class User(db.Entity):
-    username:str
-    password:str
-    age:int|None
-    #TODO:add posts maybe "required" instead of "|"
+    username=Required(str, unique=True)
+    password=Required(str)
+    age=Optional(int)
 
-db.generate_mapping(create_tables=True) #without this tables are not created...
+db.generate_mapping(create_tables=True)
 
 @db_session
-def create_user():
-    #create user logic
+def create_user(uname, pwd, ag):
+    User(username=uname, password=pwd, age=ag)
+
     return "ok"
 
 @db_session
-def check_user_exixts():
-    #this will be sed A LOT
-    return True
+def check_user_exixts(username):
+    query = select(u for u in User if u.username == username)
+    return bool(query.count())
+
+
+ #without this tables are not created...

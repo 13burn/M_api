@@ -1,7 +1,8 @@
+from venv import create
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
-from db import check_user_exixts
+from db import check_user_exixts, create_user
 
 api = FastAPI()
 
@@ -24,15 +25,19 @@ async def login(user:User):
 
 @api.post("/auth/sign-up")
 async def sign_up(user:User):
-    if check_user_exixts():
-        print("I know!!!")
-    return {"Msg":"this is the sign-up endpoint"}
+    if check_user_exixts(user.username):
+        return{"Status":"Error", "Msg":"Cannot create user, name already exists"}
+    else:
+        create_user(user.username, user.password,user.age)
+        return{"Status":"Success", "Msg":"Username creatd!"}
 
 @api.post("/query/{username}")
-async def sign_up(username:int):
-    if check_user_exixts():
-        print("I know!!!")
-    return {"Msg":"this is the sign-up endpoint"}
+async def query(username:str):
+    if check_user_exixts(username):
+        return{"Status":"Error", "Msg":"Cannot create user, name already exists"}
+    else:
+        return{"Status":"Success", "Msg":"This username is available"}
+        
 
 if __name__ == "__main__":
     uvicorn.run(api)
