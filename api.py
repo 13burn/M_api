@@ -28,7 +28,11 @@ async def sign_up(user:User):
         print("I know!!!")
     return {"Msg":"this is the sign-up endpoint"}
 
-
+@api.post("/query/{username}")
+async def sign_up(username:int):
+    if check_user_exixts():
+        print("I know!!!")
+    return {"Msg":"this is the sign-up endpoint"}
 
 if __name__ == "__main__":
     uvicorn.run(api)

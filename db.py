@@ -10,6 +10,8 @@ class User(db.Entity):
     age:int|None
     #TODO:add posts maybe "required" instead of "|"
 
+db.generate_mapping(create_tables=True) #without this tables are not created...
+
 @db_session
 def create_user():
     #create user logic
