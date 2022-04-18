@@ -1,10 +1,12 @@
-from venv import create
 import uvicorn
-from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from db import check_user_exixts, create_user
 
 api = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class User(BaseModel):
     username:str
@@ -16,12 +18,9 @@ def main():
     return {"Msg":"This is main"}
 
 @api.get("/auth")
-async def auth(): #this is cool, I know what I'm doing
+async def auth(token:str=Depends(oauth2_scheme)): #this is cool, I know what I'm doing
+    print(token)
     return {"Msg":"this is the auth endpoint"}
-
-@api.post("/auth/login")
-async def login(user:User):
-    return {"Msg":"this is the login endpoint"}
 
 @api.post("/auth/sign-up")
 async def sign_up(user:User):
@@ -37,7 +36,12 @@ async def query(username:str):
         return{"Status":"Error", "Msg":"Cannot create user, name already exists"}
     else:
         return{"Status":"Success", "Msg":"This username is available"}
-        
+ 
+@api.post("/token")
+async def token(form_data:OAuth2PasswordRequestForm = Depends()):
+    print(form_data)
+    return {"access_token":form_data.username+"token"}
+
 
 if __name__ == "__main__":
     uvicorn.run(api)
